@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap');
+
+body, html {
+    height: 100%;
+    width: 100%;
+
+    margin: 0;
+
+    font-family: "Roboto", sans-serif;
+}
+
+.app {
+    background: #003355;
+}
+
+.app, main {
+    width: 100vw;
+    height: 100vh;
+}
+
+#options {
+    position: absolute;
+
+    right: 15px;
+    top: 5px;
+
+    display: flex;
+    flex-direction: column;
+
+    color: #001133;
+
+    * {
+        all: unset;
+
+        cursor: default;
+
+        margin: 0;
+        padding: 0;
+
+        text-align: end;
+
+        font-size: 2.5rem;
+        font-weight: 800;
+    }
+
+    button {
+        transition-duration: 0.2s;
+        &:hover {
+            margin-right: 20px;
+        }
+    }
+
+    #title {
+        color: #EEE;
+
+        margin: 0;
+        padding: 0;
+    }
+}
+
+#alerts {
+    position: absolute;
+
+    right: 0;
+    top: 20px;
+
+    width: 100%;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+
+    .alert {
+        transition-duration: 0.2s;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        background: #EEE;
+        border-radius: 4px;
+        padding: 10px 20px;
+
+        color: #333;
+
+        box-shadow: #001133 0px 3px;
+    }
+}
+
+#label-holder {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    height: 100%;
+}
+
+
+#scientific-name {
+    font-style: italic;
+}
+/*.label-title {*/
+/*    color: #EEE;*/
+
+/*    font-size: 1.5rem;*/
+/*}*/
+.label {
+    background: #EEE;
+
+    font-size: 1.5em;
+
+    border-radius: 4px;
+
+    padding: 30px;
+
+    width: fit-content;
+
+    display: flex;
+    flex-direction: column;
+
+    box-shadow: #001133 0px 5px;
+}
+.label>*, .row>*, .row>*>* {
+    flex-grow: 1;
+
+    display: flex;
+
+    font-size: 1.5rem;
+}
+input {
+    background: transparent;
+
+    border: none;
+    border-bottom: 2px solid #AAA;
+
+    outline: none;
+
+    margin-bottom: 10px;
+}
