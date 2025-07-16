@@ -1,3 +1,4 @@
+<link rel="stylesheet" href="../app.css">
 <script lang="ts">
     import Space from './Space.svelte';
     import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
@@ -65,7 +66,7 @@
 
         const pagePadding = 0.5 * 72;
 
-        const padding = 10;
+        const padding = 5;
 
         const fontSize = 5;
 
@@ -81,12 +82,13 @@
 
         // Draw text with automatic wrapping
         page.drawText(labelString(), {
+        // page.drawText("Test\nOf\nMany\nLines", {
             x: pagePadding + padding,
-            y: pagePadding + pageSize.y - padding - HelveticaFont.heightAtSize(fontSize),
+            y: pageSize.y - pagePadding - padding - HelveticaFont.heightAtSize(fontSize),
             size: fontSize,
             font: HelveticaFont,
             color: rgb(0, 0, 0),
-            maxWidth: width - padding,
+            maxWidth: widthpts,
             lineHeight: fontSize * 1.2,
         });
 
@@ -108,12 +110,31 @@
 
     let pdfIFrame: HTMLIFrameElement;
     let labelHolder: HTMLDivElement;
+    let labelMenu: HTMLDivElement;
     let previewHolder: HTMLDivElement;
+    let previewMenu: HTMLDivElement;
+    function show(element: HTMLElement | HTMLElement[], display: string = 'flex') {
+        if ('style' in element) {
+            element.style.display = display;
+        } else {
+            element.forEach(e => show(e, display));
+        }
+    }
+    function hide(element: HTMLElement | HTMLElement[]) {
+        if ('style' in element) {
+            element.style.display = "none";
+        } else {
+            element.forEach(hide);
+        }
+    }
     function showPreview(){
         if(!(labelHolder && previewHolder && pdfIFrame)) return;
 
-        labelHolder.style.display = "none";
-        previewHolder.style.display = "flex";
+        hide([labelHolder, labelMenu]);
+        show([previewHolder, previewMenu]);
+
+        // labelHolder.style.display = "none";
+        // previewHolder.style.display = "flex";
 
         createPDF("in", 1, 0.5)
             .then(data => {
@@ -127,9 +148,14 @@
     function hidePreview(){
         if(!(labelHolder && previewHolder)) return;
 
-        labelHolder.style.display = "flex";
-        previewHolder.style.display = "none";
+        show([labelHolder, labelMenu]);
+        hide([previewHolder, previewMenu]);
+
+        // labelHolder.style.display = "flex";
+        // previewHolder.style.display = "none";
     }
+
+    // $effect(hidePreview);
 
     // for testing
     // $effect(showPreview);
@@ -138,8 +164,13 @@
 <div id="options">
     <div id="title">simple bug label generator</div>
 <!--    <button id="print">print</button>-->
-    <button id="export" onclick={showPreview}>export</button>
-    <button id="export-text" onclick={exportAsText}>copy to clipboard</button>
+    <div id="preview-menu" class="menu" bind:this={previewMenu} style="display: none;">
+        <button id="back" onclick={hidePreview}>back to editor</button>
+    </div>
+    <div id="label-menu" class="menu" bind:this={labelMenu}>
+        <button id="export" onclick={showPreview}>export</button>
+        <button id="export-text" onclick={exportAsText}>copy to clipboard</button>
+    </div>
 </div>
 
 <div id="alerts">

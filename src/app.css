@@ -29,7 +29,12 @@ body, html {
 
     color: #001133;
 
-    * {
+    .menu {
+        display: flex;
+        flex-direction: column;
+    }
+
+    button, #title {
         all: unset;
 
         cursor: default;
@@ -220,7 +225,7 @@ input {
     }
 
     label {
-        padding: 0 7px 0 7px;
+        padding: 5px 10px;
 
         border-radius: 4px;
 
@@ -230,7 +235,9 @@ input {
         align-items: center;
         justify-content: center;
 
-        transition-duration: 0.2s;
+        transition-duration: 0.1s;
+
+        font-size: 1rem;
     }
 
     input[type=radio]:checked + label {
