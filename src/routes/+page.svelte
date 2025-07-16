@@ -1,6 +1,6 @@
 <script lang="ts">
     import Space from './Space.svelte';
-    import {PDFDocument, StandardFonts} from 'pdf-lib'
+    import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 
     let scientificName = $state();
     let commonName     = $state();
@@ -59,11 +59,40 @@
         const pdfDoc = await PDFDocument.create();
         const HelveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
 
-        const page = pdfDoc.addPage([8.5 * 72, 11 * 72]);
+        const pageSize = { x: 8.5 * 72, y: 11 * 72 };
+
+        const page = pdfDoc.addPage([pageSize.x, pageSize.y]);
+
+        const pagePadding = 0.5 * 72;
+
+        const padding = 10;
+
+        const fontSize = 5;
+
+        // Draw label border
+        page.drawRectangle({
+            x: pagePadding,
+            y: pageSize.y - pagePadding,
+            width: widthpts,
+            height: - heightpts,
+            borderColor: rgb(0, 0, 0),
+            borderWidth: 1,
+        });
+
+        // Draw text with automatic wrapping
+        page.drawText(labelString(), {
+            x: pagePadding + padding,
+            y: pagePadding + pageSize.y - padding - HelveticaFont.heightAtSize(fontSize),
+            size: fontSize,
+            font: HelveticaFont,
+            color: rgb(0, 0, 0),
+            maxWidth: width - padding,
+            lineHeight: fontSize * 1.2,
+        });
 
         return await pdfDoc.save();
 
-        // download(pdfBytes, "bug_labels.pdf", "application/pdf");
+        // download(await pdfDoc.save(), "bug_labels.pdf", "application/pdf");
     }
 
     // who's gonna export as text? this is kinda very useless
