@@ -3,13 +3,99 @@
     import Space from './Space.svelte';
     import { PDFDocument, StandardFonts, rgb } from 'pdf-lib'
 
-    let scientificName = $state();
-    let commonName     = $state();
-    let family         = $state();
-    let order          = $state();
-    let location       = $state();
-    let date           = $state();
-    let collector      = $state();
+    // this is, perhaps, the ugliest way possible to do this
+    let curLabel = 0;
+
+    interface Label {
+        scientificName: string;
+        commonName    : string;
+        family        : string;
+        order         : string;
+        location      : string;
+        date          : string;
+        collector     : string;
+    }
+    let labels: Label[] = [];
+
+    let labelList: HTMLDivElement;
+
+    let scientificName = $state("");
+    let commonName     = $state("");
+    let family         = $state("");
+    let order          = $state("");
+    let location       = $state("");
+    let date           = $state("");
+    let collector      = $state("");
+
+    function updateCurLabel() {
+        let label: Label = {
+            scientificName,
+            commonName    ,
+            family        ,
+            order         ,
+            location      ,
+            date          ,
+            collector     ,
+        }
+
+        labels[curLabel] = label;
+    }
+
+    function updateLabelList() {
+        while (labelList.children) labelList.removeChild(labelList.children[0]);
+
+        let fragment = document.createDocumentFragment();
+
+        labels.forEach((label, ind) => {
+            let elem = document.createElement("button");
+            elem.classList.add('label-name');
+
+            let name = label.commonName;
+            if (!name) {
+                elem.textContent = "Unnamed Bug";
+            } else {
+                elem.textContent = name.length > 13 ? name.slice(0, 10) + "..." : name;
+            }
+
+            elem.addEventListener('click', () => setLabel(ind))
+
+            labelList.appendChild(elem);
+        });
+
+        let addButton = document.createElement("button");
+        addButton.classList.add('add-label');
+        addButton.textContent = "+";
+        addButton.addEventListener('click', () => addLabel());
+    }
+
+    function initLabelList() {
+        updateCurLabel();
+
+        updateLabelList();
+    }
+    $effect(initLabelList);
+
+    function addLabel() {
+        curLabel = labels.length;
+
+        updateCurLabel();
+        updateLabelList();
+    }
+
+    function setLabel(ind: number) {
+        curLabel = ind;
+
+        let l = labels[curLabel];
+
+        // is this possible with destructuring?
+        scientificName = l.scientificName ;
+        commonName     = l.commonName     ;
+        family         = l.family         ;
+        order          = l.order          ;
+        location       = l.location       ;
+        date           = l.date           ;
+        collector      = l.collector      ;
+    }
 
     function labelString(): string {
         return `${scientificName} (${commonName})\n` +
@@ -292,6 +378,13 @@
 
 <div id="label-center">
     <div id="label-holder" bind:this={labelHolder}>
+        <div id="label-list" bind:this={labelList}>
+            <button class="label-name">Unnamed Bug</button>
+
+            <button id="add-label" onclick={addLabel}>
+                +
+            </button>
+        </div>
         <div class="label">
             <div class="row">
                 <input size="15" type="text" id="scientific-name" placeholder="Scientific Name" bind:value={scientificName}/>

@@ -90,7 +90,7 @@ body, html {
 
         color: #333;
 
-        box-shadow: #001133 0px 3px;
+        box-shadow: #001133 0 3px;
     }
 }
 
@@ -104,12 +104,48 @@ body, html {
     height: 100%;
 }
 
-#label-holder, #label-options-holder {
+#label-holder {
     display: flex;
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
+}
 
-    width: 100%;
+#label-list {
+    display: flex;
+
+    margin-bottom: 10px;
+
+    gap: 10px;
+
+    #add-label {
+        all: unset;
+        cursor: default;
+        
+        background: #EEE;
+
+        padding: 5px 10px;
+
+        border-radius: 8px;
+
+        color: #333;
+
+        box-shadow: #001133 0 5px;
+    }
+
+    .label-name {
+        all: unset;
+        cursor: default;
+
+        background: #EEE;
+
+        padding: 5px 10px;
+
+        border-radius: 8px;
+
+        color: #333;
+
+        box-shadow: #001133 0 5px;
+    }
 }
 
 #label-options-holder {
@@ -126,9 +162,13 @@ body, html {
     flex-grow: 0;
 
     display: flex;
+    justify-content: center;
+    align-items: center;
+
+    /*width: 100%;*/
     flex-direction: column;
 
-    box-shadow: #001133 0px 5px;
+    box-shadow: #001133 0 5px;
 }
 
 #label-options {
@@ -167,7 +207,7 @@ body, html {
     display: flex;
     flex-direction: column;
 
-    box-shadow: #001133 0px 5px;
+    box-shadow: #001133 0 5px;
 }
 .label>*, .row>*, .row>*>* {
     flex-grow: 1;
@@ -250,7 +290,7 @@ input {
 /*}*/
 
 #preview-holder {
-    display: flex;
+    /*display: flex;*/
     gap: 10px;
 
     align-items: flex-start;
