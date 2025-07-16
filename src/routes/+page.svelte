@@ -18,6 +18,10 @@
                `${date} - ${collector}`              ;
     }
 
+    function reloadsPDF(element: HTMLInputElement) {
+        element.addEventListener('change', () => generatePDF());
+    }
+
     // not very robust, but whatever
     function alert(text: string){
         let ae = document.createElement("div");
@@ -52,10 +56,23 @@
         }, 0);
     }
 
+    function toPts(value: number, unit: string) {
+        switch (unit) {
+            case 'mm':
+                return value * 2.834645669;
+            case 'in':
+                return value * 72;
+            case 'pt':
+                return value;
+
+            default:
+                throw "Unknown unit: " + unit;
+        }
+    }
     async function createPDF(unit: string, width: number, height: number) {
         // Convert size to PDF points (1 point = 1/72 inch)
-        const widthpts  = unit === 'mm' ? width * 2.834645669 : width * 72;
-        const heightpts = unit === 'mm' ? height * 2.834645669 : height * 72;
+        const widthpts  = toPts(width, unit);
+        const heightpts = toPts(height, unit);
 
         const pdfDoc = await PDFDocument.create();
         const HelveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
@@ -88,13 +105,57 @@
             size: fontSize,
             font: HelveticaFont,
             color: rgb(0, 0, 0),
-            maxWidth: widthpts,
+            maxWidth: widthpts - padding * 2,
             lineHeight: fontSize * 1.2,
         });
 
         return await pdfDoc.save();
 
         // download(await pdfDoc.save(), "bug_labels.pdf", "application/pdf");
+    }
+
+    function downloadPDF() {
+        let unit = (new FormData(unitSelect)).get("unit");
+        if (!unit) unit = "pt"; else unit = unit.toString();
+
+        const size = {
+            x: parseFloat(widthInput.value),
+            y: parseFloat(heightInput.value)
+        };
+
+        download(createPDF(unit, size.x, size.y), "bug_labels.pdf", "application/pdf");
+    }
+
+    let unitSelect: HTMLFormElement;
+    $effect(() => {
+        const inputs = unitSelect.querySelectorAll('input');
+
+        inputs.forEach(reloadsPDF);
+    });
+    let sizeSelect: HTMLDivElement;
+    $effect(() => {
+        const inputs = sizeSelect.querySelectorAll('input');
+
+        inputs.forEach(reloadsPDF);
+    });
+
+    let widthInput: HTMLInputElement;
+    let heightInput: HTMLInputElement;
+    function generatePDF() {
+        let unit = (new FormData(unitSelect)).get("unit");
+        if (!unit) unit = "pt"; else unit = unit.toString();
+
+        const size = {
+            x: parseFloat(widthInput.value),
+            y: parseFloat(heightInput.value)
+        };
+
+        createPDF(unit, size.x, size.y)
+            .then(data => {
+                let file = new Blob([data], {type: "application/pdf"});
+
+                pdfIFrame.src = URL.createObjectURL(file);
+            });
     }
 
     // who's gonna export as text? this is kinda very useless
@@ -133,27 +194,20 @@
         hide([labelHolder, labelMenu]);
         show([previewHolder, previewMenu]);
 
-        // labelHolder.style.display = "none";
-        // previewHolder.style.display = "flex";
-
-        createPDF("in", 1, 0.5)
-            .then(data => {
-                let file = new Blob([data], {type: "application/pdf"});
-
-                pdfIFrame.src = URL.createObjectURL(file);
-            });
-
-
+        generatePDF();
     }
     function hidePreview(){
         if(!(labelHolder && previewHolder)) return;
 
         show([labelHolder, labelMenu]);
         hide([previewHolder, previewMenu]);
-
-        // labelHolder.style.display = "flex";
-        // previewHolder.style.display = "none";
     }
+
+    // hotkeys
+    addEventListener("keydown", (event) => {
+        if (event.key == "Enter") showPreview();
+        if (event.key == "Escape") hidePreview();
+    })
 
     // $effect(hidePreview);
 
@@ -166,6 +220,7 @@
 <!--    <button id="print">print</button>-->
     <div id="preview-menu" class="menu" bind:this={previewMenu} style="display: none;">
         <button id="back" onclick={hidePreview}>back to editor</button>
+        <button id="download" onclick={downloadPDF}>download</button>
     </div>
     <div id="label-menu" class="menu" bind:this={labelMenu}>
         <button id="export" onclick={showPreview}>export</button>
@@ -213,7 +268,7 @@
                     <div style="flex-grow: 2;">
                         units
                     </div>
-                    <div class="unit-select">
+                    <form class="unit-select" bind:this={unitSelect}>
                         <div>
                             <input type="radio" id="unit-in" value="in" name="unit" checked>
                             <label for="unit-in">in</label>
@@ -228,15 +283,15 @@
                             <input type="radio" id="unit-pt" value="pt" name="unit">
                             <label for="unit-pt">pt</label>
                         </div>
-                    </div>
+                    </form>
                 </div>
 
-                <div class="row">
-                    <input type="number" size="5" placeholder="width" min="0" step="0.01" value="1"/>
+                <div class="row" bind:this={sizeSelect}>
+                    <input bind:this={widthInput} type="number" size="5" placeholder="width" min="0" step="0.01" value="1"/>
                     <Space />
                     <div style="color: #AAA; flex-grow: 0;">x</div>
                     <Space />
-                    <input type="number" size="5" placeholder="height" min="0" step="0.01" value="0.5"/>
+                    <input bind:this={heightInput} type="number" size="5" placeholder="height" min="0" step="0.01" value="0.5"/>
                 </div>
             </div>
         </div>
