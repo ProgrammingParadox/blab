@@ -89,7 +89,7 @@ body, html {
     }
 }
 
-#label-holder {
+#label-center {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -99,15 +99,55 @@ body, html {
     height: 100%;
 }
 
+#label-holder, #label-options-holder {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+}
+
+#label-options-holder {
+    background: #EEE;
+
+    font-size: 1.5em;
+
+    border-radius: 4px;
+
+    padding: 30px;
+
+    width: fit-content;
+
+    flex-grow: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    box-shadow: #001133 0px 5px;
+}
+
+#label-options {
+    display: flex;
+    flex-direction: column;
+    /*align-content: stretch;*/
+
+    input {
+        width: 0;
+        min-width: 0;
+    }
+}
+#label-options>*, #label-options>*>* {
+    flex-grow: 1;
+
+    display: flex;
+
+    font-size: 1.5rem;
+}
 
 #scientific-name {
     font-style: italic;
 }
-/*.label-title {*/
-/*    color: #EEE;*/
 
-/*    font-size: 1.5rem;*/
-/*}*/
 .label {
     background: #EEE;
 
@@ -134,10 +174,84 @@ body, html {
 input {
     background: transparent;
 
+    flex: 1;
+
     border: none;
     border-bottom: 2px solid #AAA;
 
     outline: none;
 
+    transition-duration: 0.2s;
+    &:focus {
+        border-bottom: 2px solid #003355;
+    }
+}
+
+.row:not(:last-child) {
+    margin-bottom: 5px;
+}
+.row:not(:last-child) input, .row:not(:last-child) .unit-select {
     margin-bottom: 10px;
+}
+
+.unit-select {
+    background: #DDD;
+
+    border-radius: 4px;
+
+    margin-left: 10px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    div {
+        flex-grow: 2;
+    }
+
+    .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    input {
+        display: none;
+    }
+
+    label {
+        padding: 0 7px 0 7px;
+
+        border-radius: 4px;
+
+        width: 100%;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        transition-duration: 0.2s;
+    }
+
+    input[type=radio]:checked + label {
+        background-color: #AAA;
+    }
+}
+
+/*.unit-select input[type=radio] {*/
+/*    display: none;*/
+/*}*/
+
+#preview-holder {
+    display: flex;
+    gap: 10px;
+
+    align-items: flex-start;
+
+    display: none;
+}
+
+#pdf-preview {
+    width: 30vw;
+    height: 70vh;
 }

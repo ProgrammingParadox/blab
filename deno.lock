@@ -4,7 +4,7 @@
     "npm:@sveltejs/adapter-auto@6": "6.0.1_@sveltejs+kit@2.23.0__@sveltejs+vite-plugin-svelte@6.0.0___svelte@5.36.0____acorn@8.15.0___vite@7.0.4____picomatch@4.0.2__svelte@5.36.0___acorn@8.15.0__vite@7.0.4___picomatch@4.0.2__acorn@8.15.0_@sveltejs+vite-plugin-svelte@6.0.0__svelte@5.36.0___acorn@8.15.0__vite@7.0.4___picomatch@4.0.2_svelte@5.36.0__acorn@8.15.0_vite@7.0.4__picomatch@4.0.2",
     "npm:@sveltejs/kit@^2.22.0": "2.23.0_@sveltejs+vite-plugin-svelte@6.0.0__svelte@5.36.0___acorn@8.15.0__vite@7.0.4___picomatch@4.0.2_svelte@5.36.0__acorn@8.15.0_vite@7.0.4__picomatch@4.0.2_acorn@8.15.0",
     "npm:@sveltejs/vite-plugin-svelte@6": "6.0.0_svelte@5.36.0__acorn@8.15.0_vite@7.0.4__picomatch@4.0.2",
-    "npm:@svgdotjs/svg.js@^3.2.4": "3.2.4",
+    "npm:pdf-lib@^1.17.1": "1.17.1",
     "npm:svelte-check@4": "4.2.2_svelte@5.36.0__acorn@8.15.0_typescript@5.8.3",
     "npm:svelte@5": "5.36.0_acorn@8.15.0",
     "npm:typescript@5": "5.8.3",
@@ -168,6 +168,18 @@
         "@jridgewell/sourcemap-codec"
       ]
     },
+    "@pdf-lib/standard-fonts@1.0.0": {
+      "integrity": "sha512-hU30BK9IUN/su0Mn9VdlVKsWBS6GyhVfqjwl1FjZN4TxP6cCw0jP2w7V3Hf5uX7M0AZJ16vey9yE0ny7Sa59ZA==",
+      "dependencies": [
+        "pako"
+      ]
+    },
+    "@pdf-lib/upng@1.0.1": {
+      "integrity": "sha512-dQK2FUMQtowVP00mtIksrlZhdFXQZPC+taih1q4CvPZ5vqdxR/LKBaFg0oAfzd1GlHZXXSPdQfzQnt+ViGvEIQ==",
+      "dependencies": [
+        "pako"
+      ]
+    },
     "@polka/url@1.0.0-next.29": {
       "integrity": "sha512-wwQAWhWSuHaag8c4q/KN/vCoeOJYshAIvMQwD4GpSb3OiZklFfvAgmj0VCBBImRpuF/aFgIRzllXlVX93Jevww=="
     },
@@ -326,9 +338,6 @@
         "vitefu"
       ]
     },
-    "@svgdotjs/svg.js@3.2.4": {
-      "integrity": "sha512-BjJ/7vWNowlX3Z8O4ywT58DqbNRyYlkk6Yz/D13aB7hGmfQTvGX4Tkgtm/ApYlu9M7lCQi15xUEidqMUmdMYwg=="
-    },
     "@types/cookie@0.6.0": {
       "integrity": "sha512-4Kh9a6B2bQciAhf7FSuMRRkUWecJgJu9nPnx3yzpsfXX/c50REIqpHY4C82bXP90qrLtXtkDxTZosYO3UpOwlA=="
     },
@@ -456,6 +465,18 @@
       "integrity": "sha512-N8SpfPUnUp1bK+PMYW8qSWdl9U+wwNWI4QKxOYDy9JAro3WMX7p2OeVRF9v+347pnakNevPmiHhNmZ2HbFA76w==",
       "bin": true
     },
+    "pako@1.0.11": {
+      "integrity": "sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw=="
+    },
+    "pdf-lib@1.17.1": {
+      "integrity": "sha512-V/mpyJAoTsN4cnP31vc0wfNA1+p20evqqnap0KLoRUN0Yk/p3wN52DOEsL4oBFcLdb76hlpKPtzJIgo67j/XLw==",
+      "dependencies": [
+        "@pdf-lib/standard-fonts",
+        "@pdf-lib/upng",
+        "pako",
+        "tslib"
+      ]
+    },
     "picocolors@1.1.1": {
       "integrity": "sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA=="
     },
@@ -565,6 +586,9 @@
     "totalist@3.0.1": {
       "integrity": "sha512-sf4i37nQ2LBx4m3wB74y+ubopq6W/dIzXg0FDGjsYnZHVa1Da8FH853wlL2gtUhg+xJXjfk3kUZS3BRoQeoQBQ=="
     },
+    "tslib@1.14.1": {
+      "integrity": "sha512-Xni35NKzjgMrwevysHTCArtLDpPvye8zV/0E4EyYn43P7/7qvQwPh9BGkHewbMulVntbigmcT7rdX3BNo9wRJg=="
+    },
     "typescript@5.8.3": {
       "integrity": "sha512-p1diW6TqL9L07nNxvRMM7hMMw4c5XOo/1ibL4aAIGmSAt9slTE1Xgw5KWuof2uTOvCg9BY7ZRi+GaF+7sfgPeQ==",
       "bin": true
@@ -603,7 +627,7 @@
         "npm:@sveltejs/adapter-auto@6",
         "npm:@sveltejs/kit@^2.22.0",
         "npm:@sveltejs/vite-plugin-svelte@6",
-        "npm:@svgdotjs/svg.js@^3.2.4",
+        "npm:pdf-lib@^1.17.1",
         "npm:svelte-check@4",
         "npm:svelte@5",
         "npm:typescript@5",
