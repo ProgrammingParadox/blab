@@ -69,7 +69,26 @@
                 throw "Unknown unit: " + unit;
         }
     }
-    async function createPDF(unit: string, width: number, height: number) {
+
+    interface PDFOptions {
+        unit: string;
+
+        width: number;
+        height: number;
+
+        fontSize: number;
+
+        verticalPadding: number,
+        horizontalPadding: number,
+    }
+    async function createPDF(options: PDFOptions) {
+        let {
+            unit,
+            width, height,
+            fontSize,
+            verticalPadding, horizontalPadding
+        } = options;
+
         // Convert size to PDF points (1 point = 1/72 inch)
         const widthpts  = toPts(width, unit);
         const heightpts = toPts(height, unit);
@@ -83,9 +102,39 @@
 
         const pagePadding = 0.5 * 72;
 
-        const padding = 5;
+        // draw padding lines
+        page.drawLine({
+            start: { x: pagePadding, y: 0          },
+            end  : { x: pagePadding, y: pageSize.y },
 
-        const fontSize = 5;
+            thickness: 0.5,
+
+            dashArray: [3, 3],
+        });
+        page.drawLine({
+            start: { x: pageSize.x - pagePadding, y: 0          },
+            end  : { x: pageSize.x - pagePadding, y: pageSize.y },
+
+            thickness: 0.5,
+
+            dashArray: [3, 3],
+        });
+        page.drawLine({
+            start: { x: 0         , y: pagePadding },
+            end  : { x: pageSize.x, y: pagePadding },
+
+            thickness: 0.5,
+
+            dashArray: [3, 3],
+        });
+        page.drawLine({
+            start: { x: 0         , y: pageSize.y - pagePadding },
+            end  : { x: pageSize.x, y: pageSize.y - pagePadding },
+
+            thickness: 0.5,
+
+            dashArray: [3, 3],
+        });
 
         // Draw label border
         page.drawRectangle({
@@ -100,12 +149,12 @@
         // Draw text with automatic wrapping
         page.drawText(labelString(), {
         // page.drawText("Test\nOf\nMany\nLines", {
-            x: pagePadding + padding,
-            y: pageSize.y - pagePadding - padding - HelveticaFont.heightAtSize(fontSize),
+            x: pagePadding + horizontalPadding,
+            y: pageSize.y - pagePadding - verticalPadding - HelveticaFont.heightAtSize(fontSize),
             size: fontSize,
             font: HelveticaFont,
             color: rgb(0, 0, 0),
-            maxWidth: widthpts - padding * 2,
+            maxWidth: widthpts - horizontalPadding * 2,
             lineHeight: fontSize * 1.2,
         });
 
@@ -114,43 +163,52 @@
         // download(await pdfDoc.save(), "bug_labels.pdf", "application/pdf");
     }
 
-    function downloadPDF() {
+    let verticalPadding   = $state("5");
+    let horizontalPadding = $state("5");
+    function generatePDFData() {
         let unit = (new FormData(unitSelect)).get("unit");
         if (!unit) unit = "pt"; else unit = unit.toString();
 
-        const size = {
-            x: parseFloat(widthInput.value),
-            y: parseFloat(heightInput.value)
-        };
+        return createPDF({
+            unit,
 
-        download(createPDF(unit, size.x, size.y), "bug_labels.pdf", "application/pdf");
+            width : parseFloat(widthInput ),
+            height: parseFloat(heightInput),
+
+            fontSize: parseFloat(fontSize),
+
+            verticalPadding: parseFloat(verticalPadding),
+            horizontalPadding: parseFloat(horizontalPadding),
+        });
+    }
+
+    function downloadPDF() {
+        generatePDFData()
+            .then(data =>
+                download(data, "bug_labels.pdf", "application/pdf")
+            );
     }
 
     let unitSelect: HTMLFormElement;
+    // $effect(() => {
+    //     const inputs = unitSelect.querySelectorAll('input');
+    //
+    //     inputs.forEach(reloadsPDF);
+    // });
+
+    let fontSize = $state("5");
+
+    let options: HTMLDivElement;
     $effect(() => {
-        const inputs = unitSelect.querySelectorAll('input');
+        const inputs = options.querySelectorAll('input');
 
         inputs.forEach(reloadsPDF);
     });
-    let sizeSelect: HTMLDivElement;
-    $effect(() => {
-        const inputs = sizeSelect.querySelectorAll('input');
 
-        inputs.forEach(reloadsPDF);
-    });
-
-    let widthInput: HTMLInputElement;
-    let heightInput: HTMLInputElement;
+    let widthInput = $state("1");
+    let heightInput = $state("0.5");
     function generatePDF() {
-        let unit = (new FormData(unitSelect)).get("unit");
-        if (!unit) unit = "pt"; else unit = unit.toString();
-
-        const size = {
-            x: parseFloat(widthInput.value),
-            y: parseFloat(heightInput.value)
-        };
-
-        createPDF(unit, size.x, size.y)
+        generatePDFData()
             .then(data => {
                 let file = new Blob([data], {type: "application/pdf"});
 
@@ -263,9 +321,9 @@
         </div>
 
         <div id="label-options-holder">
-            <div id="label-options">
+            <div id="label-options" bind:this={options}>
                 <div class="row">
-                    <div style="flex-grow: 2;">
+                    <div style="flex-grow: 2; align-items: center; margin-bottom: 10px;">
                         units
                     </div>
                     <form class="unit-select" bind:this={unitSelect}>
@@ -286,12 +344,85 @@
                     </form>
                 </div>
 
-                <div class="row" bind:this={sizeSelect}>
-                    <input bind:this={widthInput} type="number" size="5" placeholder="width" min="0" step="0.01" value="1"/>
+                <div class="row">
+                    <input
+                            type="number"
+
+                            size="5"
+                            placeholder="width"
+
+                            min="0"
+                            step="0.01"
+
+                            bind:value={widthInput}
+                    />
                     <Space />
                     <div style="color: #AAA; flex-grow: 0;">x</div>
                     <Space />
-                    <input bind:this={heightInput} type="number" size="5" placeholder="height" min="0" step="0.01" value="0.5"/>
+                    <input
+                            type="number"
+
+                            size="5"
+                            placeholder="height"
+
+                            min="0"
+                            step="0.01"
+
+                            bind:value={heightInput}
+                    />
+                </div>
+
+                <div class="row">
+                    <label for="font-size">font size</label>
+                    <input
+                            style="flex-grow: 2;"
+                            type="number"
+                            id="font-size"
+
+                            size="3"
+                            placeholder="font size"
+
+                            min="0"
+                            step="1"
+
+                            bind:value={fontSize}
+                    />
+                    <label for="font-size" style="flex: 0;">pt</label>
+                </div>
+
+                <div class="row">
+                    <label for="padding">ver. pad</label>
+                    <input
+                            style="min-width: 3em; flex-grow: 0;"
+
+                            id="padding-vertical"
+                            type="number"
+
+                            size="5"
+                            placeholder="vertical padding"
+
+                            min="0"
+                            step="0.01"
+
+                            bind:value={verticalPadding}
+                    />
+                </div>
+                <div class="row">
+                    <label for="padding">hor. pad</label>
+                    <input
+                            style="min-width: 3em; flex-grow: 0;"
+
+                            id="padding-horizontal"
+                            type="number"
+
+                            size="5"
+                            placeholder="horizontal padding"
+
+                            min="0"
+                            step="0.01"
+
+                            bind:value={horizontalPadding}
+                    />
                 </div>
             </div>
         </div>
