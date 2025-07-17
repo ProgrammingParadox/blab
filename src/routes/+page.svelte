@@ -42,7 +42,7 @@
     }
 
     function updateLabelList() {
-        while (labelList.children) labelList.removeChild(labelList.children[0]);
+        while (labelList.children.length) labelList.removeChild(labelList.children[0]);
 
         let fragment = document.createDocumentFragment();
 
@@ -63,9 +63,11 @@
         });
 
         let addButton = document.createElement("button");
-        addButton.classList.add('add-label');
+        addButton.id = 'add-label';
         addButton.textContent = "+";
         addButton.addEventListener('click', () => addLabel());
+
+        labelList.appendChild(addButton);
     }
 
     function initLabelList() {
@@ -378,12 +380,16 @@
 
 <div id="label-center">
     <div id="label-holder" bind:this={labelHolder}>
-        <div id="label-list" bind:this={labelList}>
-            <button class="label-name">Unnamed Bug</button>
+        <div id="label-list-holder">
+            <button id="left-scroll">&lt;</button>
+            <div id="label-list" bind:this={labelList}>
+                <button class="label-name">Unnamed Bug</button>
 
-            <button id="add-label" onclick={addLabel}>
-                +
-            </button>
+                <button id="add-label" onclick={addLabel}>
+                    +
+                </button>
+            </div>
+            <button id="right-scroll">&gt;</button>
         </div>
         <div class="label">
             <div class="row">
